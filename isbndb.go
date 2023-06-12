@@ -1,11 +1,13 @@
 package isbndb
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 )
 
 const (
@@ -15,6 +17,7 @@ const (
 type Client struct {
 	baseURL *url.URL
 	http    *http.Client
+	api_key string
 }
 
 func New(httpClient *http.Client) *Client {
@@ -23,11 +26,12 @@ func New(httpClient *http.Client) *Client {
 	return &Client{
 		baseURL: url,
 		http:    httpClient,
+		api_key: os.Getenv("ISBNDB_API_KEY"),
 	}
 }
 
-func (c *Client) get(ctx context.Context, url *url.URL, result interface{}) error {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url.String(), nil)
+func (c *Client) get(ctx context.Context, url string, result interface{}) error {
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
 		return err
 	}
@@ -35,8 +39,18 @@ func (c *Client) get(ctx context.Context, url *url.URL, result interface{}) erro
 	return c.do(req, result)
 }
 
-func (c *Client) post() {
+func (c *Client) post(ctx context.Context, url string, body map[string]interface{}, result interface{}) error {
+	marshalledBody, err := json.Marshal(body)
+	if err != nil {
+		return err
+	}
 
+	req, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bytes.NewBuffer(marshalledBody))
+	if err != nil {
+		return err
+	}
+
+	return c.do(req, result)
 }
 
 func (c *Client) do(req *http.Request, result interface{}) error {

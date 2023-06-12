@@ -4,6 +4,11 @@ import (
 	"context"
 )
 
+const (
+	authorPath      = "author"
+	authorQueryPath = "authors"
+)
+
 type Author struct {
 	Author string `json:"author,omitempty"`
 	Books  []Book `json:"books,omitempty"`
@@ -15,13 +20,17 @@ type AuthorQuery struct {
 }
 
 func (c *Client) GetAuthor(ctx context.Context, author string) (Author, error) {
-	url := c.baseURL.JoinPath(author)
+	url := c.baseURL.JoinPath(authorPath).JoinPath(author)
 	var response Author
-	err := c.get(ctx, url, response)
+	err := c.get(ctx, url.String(), response)
 
 	return response, err
 }
 
 func (c *Client) QueryAuthors(ctx context.Context, query string) (AuthorQuery, error) {
-	return AuthorQuery{}, nil
+	url := c.baseURL.JoinPath(authorQueryPath).JoinPath(query)
+	var response AuthorQuery
+	err := c.get(ctx, url.String(), response)
+
+	return response, err
 }
