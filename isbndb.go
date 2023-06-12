@@ -11,7 +11,9 @@ import (
 )
 
 const (
-	baseURL = "https://api2.isbndb.com"
+	baseURL    = "https://api2.isbndb.com"
+	premiumURL = "https://api.premium.isbndb.com"
+	proURL     = "https://api.pro.isbndb.com"
 )
 
 type Client struct {
@@ -59,7 +61,7 @@ func (c *Client) do(req *http.Request, result interface{}) error {
 		return err
 	}
 
-	if response.StatusCode < 200 || response.StatusCode > 299 {
+	if response.StatusCode < http.StatusOK || response.StatusCode > 299 {
 		return fmt.Errorf("status code: %v, error: %v", response.StatusCode, response.Status)
 	}
 

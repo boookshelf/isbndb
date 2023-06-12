@@ -2,6 +2,10 @@ package isbndb
 
 import "context"
 
+const (
+	bookPath = "book"
+)
+
 type Book struct {
 	Book struct {
 		Title         string   `json:"title,omitempty"`
@@ -28,5 +32,9 @@ type Book struct {
 }
 
 func (c *Client) GetBook(ctx context.Context, isbn string) (Book, error) {
-	return Book{}, nil
+	url := c.baseURL.JoinPath(bookPath, isbn)
+	var book Book
+	err := c.get(ctx, url.String(), &book)
+
+	return book, err
 }
