@@ -46,7 +46,7 @@ func (c *Client) do(req *http.Request, result interface{}) error {
 	}
 
 	if response.StatusCode < 200 || response.StatusCode > 299 {
-		return fmt.Errorf("Status code: %v, Error: %v", response.StatusCode, response.Status)
+		return fmt.Errorf("status code: %v, error: %v", response.StatusCode, response.Status)
 	}
 
 	defer response.Body.Close()
