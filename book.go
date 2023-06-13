@@ -32,9 +32,9 @@ type Book struct {
 }
 
 func (c *Client) GetBook(ctx context.Context, isbn string) (Book, error) {
-	url := c.baseURL.JoinPath(bookPath, isbn)
+	url := c.baseURL.JoinPath(bookPath, isbn).String()
 	var book Book
-	err := c.get(ctx, url.String(), &book)
+	err := c.get(ctx, url, &book)
 
 	return book, err
 }

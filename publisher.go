@@ -3,7 +3,8 @@ package isbndb
 import "context"
 
 const (
-	publisherPath = "publisher"
+	publisherPath      = "publisher"
+	publisherQueryPath = "publishers"
 )
 
 type Publisher struct {
@@ -13,10 +14,16 @@ type Publisher struct {
 	} `json:"books,omitempty"`
 }
 
+// Returns details and a list of books by the publisher.
 func (c *Client) GetPublisher(ctx context.Context, publisherName string) (Publisher, error) {
-	url := c.baseURL.JoinPath(publisherPath, publisherName)
+	url := c.baseURL.JoinPath(publisherPath, publisherName).String()
 	var result Publisher
-	err := c.get(ctx, url.String(), &result)
+	err := c.get(ctx, url, &result)
 
 	return result, err
+}
+
+// This returns a list of publishers that match the given query
+func (c *Client) QueryPublishers(ctx context.Context, query string) {
+
 }

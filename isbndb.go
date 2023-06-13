@@ -8,7 +8,10 @@ import (
 	"net/http"
 	"net/url"
 	"os"
+	"strconv"
 )
+
+// TODO Look into pagination
 
 const (
 	baseURL    = "https://api2.isbndb.com"
@@ -20,6 +23,21 @@ type Client struct {
 	baseURL *url.URL
 	http    *http.Client
 	api_key string
+}
+
+type PageOptions struct {
+	// The number of page to retrieve, please note the API will not return more than 10,000 results no matter how you paginate them
+	Page int
+	// How many items should be returned per page, maximum of 1,000
+	PageSize int
+}
+
+type StatusCodeError struct {
+	StatusCode int
+}
+
+func (s StatusCodeError) Error() string {
+	return fmt.Sprintf("Unexpected status code: %d", s.StatusCode)
 }
 
 func New(httpClient *http.Client) *Client {
@@ -58,13 +76,16 @@ func (c *Client) post(ctx context.Context, url string, body map[string]interface
 func (c *Client) do(req *http.Request, result interface{}) error {
 	req.Header.Add("Authorization", c.api_key)
 	req.Header.Add("Content-Type", "application/json")
+
 	response, err := c.http.Do(req)
 	if err != nil {
 		return err
 	}
 
-	if response.StatusCode < http.StatusOK || response.StatusCode > 299 {
-		return fmt.Errorf("status code: %v, error: %v", response.StatusCode, response.Status)
+	if response.StatusCode != http.StatusOK {
+		return StatusCodeError{
+			StatusCode: response.StatusCode,
+		}
 	}
 
 	defer response.Body.Close()
@@ -75,4 +96,15 @@ func (c *Client) do(req *http.Request, result interface{}) error {
 	}
 
 	return nil
+}
+
+func addPageQueryParams(url *url.URL, options *PageOptions) {
+	if options == nil {
+		return
+	}
+
+	queryParams := url.Query()
+	queryParams.Add("page", strconv.Itoa(options.Page))
+	queryParams.Add("pageSize", strconv.Itoa(options.PageSize))
+	url.RawQuery = queryParams.Encode()
 }
