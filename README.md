@@ -14,7 +14,7 @@ Once you have an API key, you will need to set it as the environment variable `I
 
 ## Usage
 
-`````Go
+````Go
 client := isbndb.New(http.DefaultClient)
 book, err := client.GetBook(context.TODO(), "1501154656")
 if err != nil {
