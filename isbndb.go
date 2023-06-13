@@ -50,6 +50,11 @@ func New(httpClient *http.Client) *Client {
 	}
 }
 
+func (c *Client) SetURL(_url string) {
+	newURL, _ := url.Parse(_url)
+	c.baseURL = newURL
+}
+
 func (c *Client) get(ctx context.Context, url string, result interface{}) error {
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
