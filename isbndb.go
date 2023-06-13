@@ -56,6 +56,8 @@ func (c *Client) post(ctx context.Context, url string, body map[string]interface
 }
 
 func (c *Client) do(req *http.Request, result interface{}) error {
+	req.Header.Add("Authorization", c.api_key)
+	req.Header.Add("Content-Type", "application/json")
 	response, err := c.http.Do(req)
 	if err != nil {
 		return err

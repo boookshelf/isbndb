@@ -19,6 +19,7 @@ type AuthorQuery struct {
 	Authors []string
 }
 
+// Returns the name and a list of books by the author.
 func (c *Client) GetAuthor(ctx context.Context, author string) (Author, error) {
 	url := c.baseURL.JoinPath(authorPath, author)
 	var response Author
