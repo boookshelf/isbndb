@@ -30,6 +30,7 @@ type Book struct {
 	Reviews       []string    `json:"reviews,omitempty"`
 }
 
+// Returns the book details
 func (c *Client) GetBook(ctx context.Context, isbn string) (Book, error) {
 	url := c.baseURL.JoinPath(bookPath, isbn).String()
 	var result struct {
