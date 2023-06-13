@@ -30,6 +30,7 @@ func (c *Client) GetAuthor(ctx context.Context, author string, options *PageOpti
 	return response, err
 }
 
+// This returns a list of authors whos name matches the given query
 func (c *Client) QueryAuthors(ctx context.Context, query string, options *PageOptions) (AuthorQuery, error) {
 	url := c.baseURL.JoinPath(authorQueryPath, query)
 	addPageQueryParams(url, options)
