@@ -20,7 +20,6 @@ type AuthorQuery struct {
 }
 
 // Returns the name and a list of books by the author.
-// TODO Find why this returns empty
 func (c *Client) GetAuthor(ctx context.Context, author string, options *PageOptions) (Author, error) {
 	url := c.baseURL.JoinPath(authorPath, author)
 	addPageQueryParams(url, options)
