@@ -1,6 +1,8 @@
 ISBNdb API Wrapper
 ==================
 
+[![GoDoc](https://godoc.org/github.com/boookshelf/isbndb?status.svg)](https://pkg.go.dev/github.com/boookshelf/isbndb)
+
 This is an unofficial Go wrapper for the [ISBNdb API](https://isbndb.com/apidocs/v2).
 
 ## Installation
