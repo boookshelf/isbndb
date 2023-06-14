@@ -14,9 +14,9 @@ import (
 // TODO Look into pagination
 
 const (
-	baseURL    = "https://api2.isbndb.com"
-	premiumURL = "https://api.premium.isbndb.com"
-	proURL     = "https://api.pro.isbndb.com"
+	BaseURL    = "https://api2.isbndb.com"
+	PremiumURL = "https://api.premium.isbndb.com"
+	ProURL     = "https://api.pro.isbndb.com"
 )
 
 type Client struct {
@@ -43,7 +43,7 @@ func (s StatusCodeError) Error() string {
 }
 
 func New(opts ...ClientOptions) *Client {
-	url, _ := url.Parse(baseURL)
+	url, _ := url.Parse(BaseURL)
 
 	client := &Client{
 		baseURL: url,
@@ -56,6 +56,24 @@ func New(opts ...ClientOptions) *Client {
 	}
 
 	return client
+}
+
+func WithHttpClient(http *http.Client) ClientOptions {
+	return func(c *Client) {
+		c.http = http
+	}
+}
+
+func WithAPIKey(apiKey string) ClientOptions {
+	return func(c *Client) {
+		c.api_key = apiKey
+	}
+}
+
+func WithURL(customURL *url.URL) ClientOptions {
+	return func(c *Client) {
+		c.baseURL = customURL
+	}
 }
 
 func (c *Client) get(ctx context.Context, url string, result interface{}) error {
