@@ -25,6 +25,8 @@ type Client struct {
 	api_key string
 }
 
+type ClientOptions func(*Client)
+
 type PageOptions struct {
 	// The number of page to retrieve, please note the API will not return more than 10,000 results no matter how you paginate them
 	Page int
@@ -40,14 +42,20 @@ func (s StatusCodeError) Error() string {
 	return fmt.Sprintf("Unexpected status code: %d", s.StatusCode)
 }
 
-func New(httpClient *http.Client) *Client {
+func New(opts ...ClientOptions) *Client {
 	url, _ := url.Parse(baseURL)
 
-	return &Client{
+	client := &Client{
 		baseURL: url,
-		http:    httpClient,
+		http:    http.DefaultClient,
 		api_key: os.Getenv("ISBNDB_API_KEY"),
 	}
+
+	for _, opt := range opts {
+		opt(client)
+	}
+
+	return client
 }
 
 func (c *Client) get(ctx context.Context, url string, result interface{}) error {
