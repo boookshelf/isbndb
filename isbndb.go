@@ -14,9 +14,9 @@ import (
 // TODO Look into pagination
 
 const (
-	baseURL    = "https://api2.isbndb.com"
-	premiumURL = "https://api.premium.isbndb.com"
-	proURL     = "https://api.pro.isbndb.com"
+	BaseURL    = "https://api2.isbndb.com"
+	PremiumURL = "https://api.premium.isbndb.com"
+	ProURL     = "https://api.pro.isbndb.com"
 )
 
 type Client struct {
@@ -24,6 +24,8 @@ type Client struct {
 	http    *http.Client
 	api_key string
 }
+
+type ClientOptions func(*Client)
 
 type PageOptions struct {
 	// The number of page to retrieve, please note the API will not return more than 10,000 results no matter how you paginate them
@@ -40,13 +42,37 @@ func (s StatusCodeError) Error() string {
 	return fmt.Sprintf("Unexpected status code: %d", s.StatusCode)
 }
 
-func New(httpClient *http.Client) *Client {
-	url, _ := url.Parse(baseURL)
+func New(opts ...ClientOptions) *Client {
+	url, _ := url.Parse(BaseURL)
 
-	return &Client{
+	client := &Client{
 		baseURL: url,
-		http:    httpClient,
+		http:    http.DefaultClient,
 		api_key: os.Getenv("ISBNDB_API_KEY"),
+	}
+
+	for _, opt := range opts {
+		opt(client)
+	}
+
+	return client
+}
+
+func WithHttpClient(http *http.Client) ClientOptions {
+	return func(c *Client) {
+		c.http = http
+	}
+}
+
+func WithAPIKey(apiKey string) ClientOptions {
+	return func(c *Client) {
+		c.api_key = apiKey
+	}
+}
+
+func WithURL(customURL *url.URL) ClientOptions {
+	return func(c *Client) {
+		c.baseURL = customURL
 	}
 }
 
