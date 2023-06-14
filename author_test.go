@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 )
 
@@ -30,8 +31,8 @@ func TestGetAuthor(t *testing.T) {
 
 	defer server.Close()
 
-	client := New(http.DefaultClient)
-	client.SetURL(server.URL)
+	serverURL, _ := url.Parse(server.URL)
+	client := New(WithURL(serverURL))
 
 	response, err := client.GetAuthor(context.TODO(), "testing", nil)
 	if err != nil {
@@ -40,6 +41,12 @@ func TestGetAuthor(t *testing.T) {
 
 	if response.Author != author.Author {
 		t.Errorf("Expected authors to match")
+	}
+
+	for index, book := range author.Books {
+		if book.Title != response.Books[index].Title || book.ISBN != response.Books[index].ISBN {
+			t.Errorf("Returned books don't match")
+		}
 	}
 
 	if response.Books[0].Title != author.Books[0].Title {
@@ -64,8 +71,8 @@ func TestQueryAuthors(t *testing.T) {
 
 	defer server.Close()
 
-	client := New(http.DefaultClient)
-	client.SetURL(server.URL)
+	serverURL, _ := url.Parse(server.URL)
+	client := New(WithURL(serverURL))
 
 	response, err := client.QueryAuthors(context.TODO(), "testing", nil)
 	if err != nil {
